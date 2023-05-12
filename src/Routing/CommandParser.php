@@ -24,7 +24,7 @@ class CommandParser {
     public function getAllCommands($basePath = ".") {
 
         $commands = [];
-        $d = dir($basePath . "/Commands");
+        $d = dir($basePath);
 
         while (false !== ($entry = $d->read())) {
             $className = substr($entry, 0, strpos($entry, "."));
@@ -32,7 +32,7 @@ class CommandParser {
                 continue;
             }
 
-            $classInspector = $this->classInspectorProvider->getClassInspector($basePath . "/Commands/" . $entry);
+            $classInspector = $this->classInspectorProvider->getClassInspector($basePath . "/" . $entry);
 
             $annotations = $classInspector->getClassAnnotations();
             $name = $annotations["name"][0]->getValue();
