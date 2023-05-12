@@ -41,25 +41,36 @@ class CommandParser {
             $arguments = [];
 
             foreach ($classInspector->getPublicMethod("handleCommand")->getMethodAnnotations()["param"] as $param) {
-                $components = explode(" ", $param->getValue());
-                $type = array_shift($components);
-                $paramName = substr(array_shift($components), 1);
-                $property = substr(array_shift($components), 1);
+
+                $paramName = "";
+                $arg = true;
                 $required = false;
 
-                if ($components[0] == "@required") {
-                    array_shift($components);
-                    $required = true;
-                }
-                $paramDescription = join(" ", $components);
+                $new = preg_replace_callback(["/@[a-zA-Z]+/", "/\\$[a-zA-Z]+/"], function ($matches) use (&$paramName, &$arg, &$required) {
 
-                switch ($property) {
-                    case "argument":
-                        $arguments[] = new Argument($paramName, $paramDescription, $required);
-                        break;
-                    case "option":
-                        $options[] = new Option($paramName, $paramDescription, $required, $type);
-                        break;
+                    switch ($matches[0]) {
+                        case "@required":
+                            $required = true;
+                            break;
+                        case "@option":
+                            $arg = false;
+                            break;
+                    }
+
+                    if (strpos($matches[0], "$") == 0) {
+                        $paramName = substr($matches[0], 1);
+                    }
+
+                    return "";
+                }, $param->getValue());
+
+                $type = substr($new, 0, strpos($new, " "));
+                $paramDescription = trim(substr($new, strpos($new, " ")));
+
+                if ($arg) {
+                    $arguments[] = new Argument($paramName, $paramDescription, $required);
+                } else {
+                    $options[] = new Option($paramName, $paramDescription, $required, $type);
                 }
             }
 
