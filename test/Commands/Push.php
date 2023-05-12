@@ -9,7 +9,6 @@ namespace Kinikit\CLI\Commands;
  */
 class Push {
 
-
     /**
      * Main handle command
      *

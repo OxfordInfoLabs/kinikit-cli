@@ -5,6 +5,7 @@ namespace Kinikit\CLI\Commands;
 /**
  * @name pull
  * @description Pull the latest code from source control
+ * @default
  */
 class Pull {
 

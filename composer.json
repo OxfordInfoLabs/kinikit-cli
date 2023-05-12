@@ -10,7 +10,8 @@
   "homepage": "https://kinikit.com",
   "type": "library",
   "require": {
-    "oxil/kinikit-core": "dev-master"
+    "oxil/kinikit-core": "dev-master",
+    "vanilla/garden-cli": "dev-master"
   },
   "scripts": {
     "dev": "rm -rf vendor/oxil/kini*; ln -s ../../../../kinikit/kinikit-core vendor/oxil/kinikit-core;"

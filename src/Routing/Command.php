@@ -15,6 +15,11 @@ class Command {
     private $description;
 
     /**
+     * @var string
+     */
+    private $className;
+
+    /**
      * @var Option[]
      */
     private $options;
@@ -25,16 +30,25 @@ class Command {
     private $arguments;
 
     /**
+     * @var bool
+     */
+    private $default;
+
+    /**
      * @param string $name
      * @param string $description
+     * @param string $className
      * @param Option[] $options
      * @param Argument[] $arguments
+     * @param bool $default
      */
-    public function __construct($name, $description, $options = [], $arguments = []) {
+    public function __construct($name, $description, $className, $options = [], $arguments = [], $default = false) {
         $this->name = $name;
         $this->description = $description;
+        $this->className = $className;
         $this->options = $options;
         $this->arguments = $arguments;
+        $this->default = $default;
     }
 
     /**
@@ -66,6 +80,20 @@ class Command {
     }
 
     /**
+     * @return string
+     */
+    public function getClassName(): string {
+        return $this->className;
+    }
+
+    /**
+     * @param string $className
+     */
+    public function setClassName(string $className): void {
+        $this->className = $className;
+    }
+
+    /**
      * @return Option[]
      */
     public function getOptions() {
@@ -91,6 +119,20 @@ class Command {
      */
     public function setArguments($arguments) {
         $this->arguments = $arguments;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDefault() {
+        return $this->default;
+    }
+
+    /**
+     * @param bool $default
+     */
+    public function setDefault($default) {
+        $this->default = $default;
     }
 
 }

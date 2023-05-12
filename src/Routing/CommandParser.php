@@ -21,6 +21,10 @@ class CommandParser {
         $this->classInspectorProvider = $classInspectorProvider;
     }
 
+    /**
+     * @param $basePath
+     * @return Command[]
+     */
     public function getAllCommands($basePath = ".") {
 
         $commands = [];
@@ -37,6 +41,7 @@ class CommandParser {
             $annotations = $classInspector->getClassAnnotations();
             $name = $annotations["name"][0]->getValue();
             $description = $annotations["description"][0]->getValue();
+            $default = isset($annotations["default"]);
             $options = [];
             $arguments = [];
 
@@ -74,7 +79,7 @@ class CommandParser {
                 }
             }
 
-            $commands[] = new Command($name, $description, $options, $arguments);
+            $commands[$name ?? "*"] = new Command($name, $description, ltrim($classInspector->getClassName(), "\\"), $options, $arguments, $default);
         }
 
 
