@@ -3,6 +3,7 @@
 namespace Kinikit\CLI\Routing;
 
 use Garden\Cli\Cli;
+use Kinikit\Core\Bootstrapper;
 use Kinikit\Core\DependencyInjection\Container;
 use Kinikit\Core\Reflection\ClassInspector;
 use Kinikit\Core\Reflection\ClassInspectorProvider;
@@ -41,7 +42,27 @@ class Router {
     }
 
 
-    public function route($argv) {
+    /**
+     * Convenience wrapper to initate routing with a one liner
+     *
+     * @param $argv
+     * @return void
+     */
+    public static function route($argv) {
+
+        // New initialiser
+        Container::instance()->get(Bootstrapper::class);
+
+        // Grab and process the route
+        $router = Container::instance()->get(Router::class);
+        $router->processRoute($argv);
+
+    }
+
+
+    public function processRoute($argv) {
+
+
         $args = $this->cli->parse($argv);
 
         $className = $this->commands[($args->getCommand())]->getClassName();

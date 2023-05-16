@@ -130,7 +130,7 @@ class RouterTest extends TestCase {
         ]);
 
         $router = new Router($this->commandParser);
-        $router->route(["test", "pull", "--logErrors=false", "--autoMerge=true",  "/tmp/bingo"]);
+        $router->processRoute(["test", "pull", "--logErrors=false", "--autoMerge=true",  "/tmp/bingo"]);
 
         $this->assertTrue($mockCommand->methodWasCalled("handleCommand", [
             true, false, "/tmp/bingo"
