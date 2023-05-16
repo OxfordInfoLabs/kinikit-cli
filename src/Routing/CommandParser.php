@@ -28,7 +28,7 @@ class CommandParser {
     public function getAllCommands($basePath = ".") {
 
         $commands = [];
-        $d = dir($basePath);
+        $d = dir($basePath . "/Commands");
 
         while (false !== ($entry = $d->read())) {
             $className = substr($entry, 0, strpos($entry, "."));
@@ -36,7 +36,7 @@ class CommandParser {
                 continue;
             }
 
-            $classInspector = $this->classInspectorProvider->getClassInspector($basePath . "/" . $entry);
+            $classInspector = $this->classInspectorProvider->getClassInspector($basePath . "/Commands/" . $entry);
 
             $annotations = $classInspector->getClassAnnotations();
             $name = $annotations["name"][0]->getValue();
@@ -45,7 +45,7 @@ class CommandParser {
             $options = [];
             $arguments = [];
 
-            foreach ($classInspector->getPublicMethod("handleCommand")->getMethodAnnotations()["param"] as $param) {
+            foreach ($classInspector->getPublicMethod("handleCommand")->getMethodAnnotations()["param"] ?? [] as $param) {
 
                 $paramName = "";
                 $arg = true;

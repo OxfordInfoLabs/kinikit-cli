@@ -14,7 +14,7 @@ class CommandParserTest extends TestCase {
     public function testCanGetAllCommands() {
 
         $commandParser = Container::instance()->get(CommandParser::class);
-        $commands = $commandParser->getAllCommands("./Commands");
+        $commands = $commandParser->getAllCommands();
 
         $expectedCommands = [
             "push" => new Command("push", "Push the latest code to source control", Push::class, [
