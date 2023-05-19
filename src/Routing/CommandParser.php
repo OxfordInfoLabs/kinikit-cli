@@ -45,13 +45,15 @@ class CommandParser {
             $options = [];
             $arguments = [];
 
-            foreach ($classInspector->getPublicMethod("handleCommand")->getMethodAnnotations()["param"] ?? [] as $param) {
+            $method = $classInspector->getPublicMethod("handleCommand");
+
+            foreach ($method->getMethodAnnotations()["param"] ?? [] as $param) {
 
                 $paramName = "";
                 $arg = true;
                 $required = false;
 
-                $new = preg_replace_callback(["/@[a-zA-Z]+/", "/\\$[a-zA-Z]+/"], function ($matches) use (&$paramName, &$arg, &$required) {
+                $new = preg_replace_callback(["/@[a-zA-Z0-9]+/", "/\\$[a-zA-Z0-9]+/"], function ($matches) use (&$paramName, &$arg, &$required) {
 
                     switch ($matches[0]) {
                         case "@required":
@@ -72,8 +74,10 @@ class CommandParser {
                 $type = substr($new, 0, strpos($new, " "));
                 $paramDescription = trim(substr($new, strpos($new, " ")));
 
+                $reflectionParam = $method->getIndexedParameters()[$paramName] ?? null;
+
                 if ($arg) {
-                    $arguments[] = new Argument($paramName, $paramDescription, $required);
+                    $arguments[] = new Argument($paramName, $paramDescription, $required, $reflectionParam ? $reflectionParam->isVariadic() : false);
                 } else {
                     $options[] = new Option($paramName, $paramDescription, $required, $type);
                 }
@@ -82,6 +86,7 @@ class CommandParser {
             $commands[$name ?? "*"] = new Command($name, $description, ltrim($classInspector->getClassName(), "\\"), $options, $arguments, $default);
         }
 
+        ksort($commands);
 
         return $commands;
 

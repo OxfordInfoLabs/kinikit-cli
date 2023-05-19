@@ -19,15 +19,23 @@ class Argument {
      */
     private $required;
 
+
+    /**
+     * @var bool
+     */
+    private $variadic;
+
     /**
      * @param string $name
      * @param string $description
      * @param bool $required
+     * @param bool $variadic
      */
-    public function __construct($name, $description, $required) {
+    public function __construct($name, $description, $required, $variadic) {
         $this->name = $name;
         $this->description = $description;
         $this->required = $required;
+        $this->variadic = $variadic;
     }
 
     /**
@@ -70,6 +78,20 @@ class Argument {
      */
     public function setRequired($required) {
         $this->required = $required;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isVariadic() {
+        return $this->variadic;
+    }
+
+    /**
+     * @param bool $variadic
+     */
+    public function setVariadic( $variadic) {
+        $this->variadic = $variadic;
     }
 
 }

@@ -62,19 +62,48 @@ class Router {
 
     public function processRoute($argv) {
 
-
         $args = $this->cli->parse($argv);
 
-        $className = $this->commands[($args->getCommand())]->getClassName();
+        $command = $this->commands[($args->getCommand())];
+
+        $className = $command->getClassName();
         $classInspectorProvider = new ClassInspectorProvider();
         $class = $classInspectorProvider->getClassInspector($className);
 
         $commandInstance = Container::instance()->get($className);
 
-        $args = array_merge($args->getOpts() ?? [], $args->getArgs() ?? []);
+
+        // CLI args
+        $argValues = $args->getArgs();
+
+        // Check args
+        $commandArguments = $command->getArguments();
+        if (sizeof($commandArguments)) {
+            $lastArg = array_pop($commandArguments);
+            if ($lastArg->isVariadic()) {
+                $newArgs = [];
+                $variadics = [];
+                foreach ($argValues as $key => $value) {
+                    if (is_numeric($key)) {
+                        $variadics[] = $value;
+                    } else {
+                        $newArgs[$key] = $value;
+                    }
+                }
+                $newArgs[$lastArg->getName()] = $variadics;
+                $argValues = $newArgs;
+            }
+        }
+
+
+        $args = array_merge($args->getOpts() ?? [], $argValues ?? []);
 
         $method = $class->getPublicMethod("handleCommand");
-        $method->call($commandInstance, $args);
+        try {
+            $method->call($commandInstance, $args);
+        } catch (\Exception $e) {
+            print $this->cli->red($e->getMessage());
+        }
     }
 
     /**
@@ -93,7 +122,8 @@ class Router {
                     $this->cli->opt($option->getName(), $option->getDescription(), $option->isRequired(), $option->getType());
                 }
                 foreach ($command->getArguments() as $argument) {
-                    $this->cli->arg($argument->getName(), $argument->getDescription(), $argument->isRequired());
+                    if (!$argument->isVariadic())
+                        $this->cli->arg($argument->getName(), $argument->getDescription(), $argument->isRequired());
                 }
             }
             if ($command->getName() != "") {
@@ -102,7 +132,8 @@ class Router {
                     $this->cli->opt($option->getName(), $option->getDescription(), $option->isRequired(), $option->getType());
                 }
                 foreach ($command->getArguments() as $argument) {
-                    $this->cli->arg($argument->getName(), $argument->getDescription(), $argument->isRequired());
+                    if (!$argument->isVariadic())
+                        $this->cli->arg($argument->getName(), $argument->getDescription(), $argument->isRequired());
                 }
             }
         }
