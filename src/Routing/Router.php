@@ -102,7 +102,7 @@ class Router {
         try {
             $method->call($commandInstance, $args);
         } catch (\Exception $e) {
-            print $this->cli->red($e->getMessage());
+            print $this->cli->red($e->getMessage()) . "\n";
         }
     }
 
